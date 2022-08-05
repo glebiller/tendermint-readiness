@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -22,6 +23,7 @@ type StatusResponse struct {
 func main() {
 	resp, err := http.Get("http://localhost:26657/status")
 	if err != nil {
+		fmt.Println("Fail to connect to Tendermint RPC:\n", err)
 		os.Exit(10)
 		return
 	}
@@ -33,6 +35,7 @@ func main() {
 	var statusResponse StatusResponse
 	err = json.NewDecoder(resp.Body).Decode(&statusResponse)
 	if err != nil {
+		fmt.Println("Fail to decode json:\n", err)
 		os.Exit(20)
 		return
 	}

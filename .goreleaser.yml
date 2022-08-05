@@ -1,0 +1,46 @@
+project_name: tendermint-readiness
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - id: "tendermint-readiness"
+    main: ./cmd/tendermint-readiness
+    binary: tendermint-readiness
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+dockers:
+  - use: buildx
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "glebiller/{{ .ProjectName }}:{{ .Version }}-amd64"
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+  - use: buildx
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "glebiller/{{ .ProjectName }}:{{ .Version }}-arm64v8"
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+docker_manifests:
+  - name_template: glebiller/{{ .ProjectName }}:{{ .Version }}
+    image_templates:
+      - glebiller/{{ .ProjectName }}:{{ .Version }}-amd64
+      - glebiller/{{ .ProjectName }}:{{ .Version }}-arm64v8

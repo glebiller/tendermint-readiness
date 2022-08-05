@@ -1,7 +1,11 @@
 build:
-	CGO_ENABLED=0 go build -ldflags="-w -s" -o build/tendermint-readiness cmd/tendermint-readiness/main.go
+	goreleaser build --rm-dist --single-target --snapshot --output tendermint-readiness
 .PHONY: build
 
+package: build
+	docker build -t tendermint-readiness:local .
+.PHONY: package
+
 clean:
-	rm -rf build/
+	rm -rf dist/
 .PHONY: build
